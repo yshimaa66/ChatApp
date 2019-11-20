@@ -16,4 +16,6 @@
     <string name="friends">Friends</string>
     <string name="Block">Block</string>
     <string name="UnBlock">Unblock</string>
+    <string name="Groupname">Group name</string>
+    <string name="AddGroup">Add Group</string>
 </resources>

@@ -4,20 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Messages">
+    tools:context=".MessagesGroup">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/activity_layout_bar"
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/activity_layout_bar"
 
-        >
+            >
 
-    </include>
+        </include>
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_imagemessage"
@@ -28,28 +28,28 @@
             android:layout_marginTop="15sp"
             />
 
-    <TextView
-        android:id="@+id/username"
-        android:layout_marginTop="20sp"
-        android:layout_marginStart="140sp"
-        android:text="@string/Username"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        android:textSize="25sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:ignore="MissingConstraints" />
+        <TextView
+            android:id="@+id/username"
+            android:layout_marginTop="20sp"
+            android:layout_marginStart="140sp"
+            android:text="@string/Groupname"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:ignore="MissingConstraints" />
 
 
-    <com.google.android.material.tabs.TabLayout
-        android:layout_below="@id/toolbar"
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        tools:ignore="MissingConstraints">
+        <com.google.android.material.tabs.TabLayout
+            android:layout_below="@id/toolbar"
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            tools:ignore="MissingConstraints">
 
-    </com.google.android.material.tabs.TabLayout>
+        </com.google.android.material.tabs.TabLayout>
 
 
 
@@ -121,7 +121,7 @@
 
 
 
-</RelativeLayout>
+    </RelativeLayout>
 
 
 

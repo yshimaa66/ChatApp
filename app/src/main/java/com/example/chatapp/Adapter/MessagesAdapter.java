@@ -11,8 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapp.Fragment.Group;
 import com.example.chatapp.Messages;
 import com.example.chatapp.Model.Chat;
+import com.example.chatapp.Model.GroupChat;
 import com.example.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,9 +32,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private Context context;
     private List<Chat> chat;
 
+    private List<GroupChat> groupchat;
+
+
 private String imageurl;
 
     FirebaseUser firebaseUser;
+
 
 
     public MessagesAdapter(Context context, List<Chat> chat, String imageurl) {
