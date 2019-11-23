@@ -43,7 +43,8 @@
                 android:id="@+id/usernamefragmentprofile"
                 android:text="@string/Username"
                 android:layout_marginTop="20sp"
-
+                android:fontFamily="@font/novusbold"
+                android:textColor="@color/colorPrimary"
                 android:textSize="20sp"
                 android:textStyle="bold"
 
@@ -63,6 +64,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
 
+            android:fontFamily="@font/novusbold"
+            android:textColor="@color/colorPrimary"
             android:id="@+id/friends"
             android:text="@string/friends"
             android:layout_marginTop="350sp"

@@ -86,7 +86,8 @@ public class Home extends AppCompatActivity implements SearchView.OnQueryTextLis
 
         Toolbar toolbar=findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle("Chat App");
+
 
 
         firebaseUser= FirebaseAuth.getInstance().getCurrentUser();

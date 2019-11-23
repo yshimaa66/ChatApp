@@ -1,6 +1,7 @@
 package com.example.chatapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,8 +37,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -53,6 +60,7 @@ public class Messages extends AppCompatActivity {
     boolean isFinalized;
 
 
+    ValueEventListener isseen;
 
     Button sendbtn;
     EditText typemessage;
@@ -82,6 +90,7 @@ public class Messages extends AppCompatActivity {
 
 
         blockTV.setVisibility(View.GONE);
+
 
 
 
@@ -119,10 +128,11 @@ public class Messages extends AppCompatActivity {
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+        isFinalized= false;
 
         userblocklist(userid);
 
-        isFinalized= false;
+
 
         sendbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,11 +199,20 @@ public class Messages extends AppCompatActivity {
 
 
         });
+
+        isseenmessage(userid);
+
+
     }
+
+
+
 
 
     private void sendmessage(String sender, String receiver, String message){
 
+
+        String currenttime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
 
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
 
@@ -202,6 +221,10 @@ public class Messages extends AppCompatActivity {
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
+        hashMap.put("time",currenttime);
+
+        hashMap.put("isseen",false);
+
 
         reference.child("Chats").push().setValue(hashMap);
 
@@ -277,83 +300,75 @@ public class Messages extends AppCompatActivity {
 
 
 
-    @SuppressLint("ResourceType")
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+    private void isseenmessage(final String userid){
 
 
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.message_menu, menu);
-
-        //getMenuInflater().inflate(R.menu.message_menu, menu);
 
 
-        return true;
+        reference = FirebaseDatabase.getInstance().getReference("Chats");
+
+
+        isseen=  reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                chat.clear();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    Chat cchat = snapshot.getValue(Chat.class);
+
+                    if (cchat.getReceiver().equals(firebaseUser.getUid()) && cchat.getSender().equals(userid)) {
+
+
+                        HashMap<String,Object> hashMap= new HashMap<>();
+
+                        hashMap.put("isseen",true);
+
+                        snapshot.getRef().updateChildren(hashMap);
+
+                    }
+
+
+
+
+
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+
+
+
+
+
+
+
+
     }
 
 
 
-    @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-
-        menu.findItem(R.id.unblock).setEnabled(isFinalized);
-        return true;
-    }
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.block) {
-
-
-
-
-            Blocklist blocklist = new Blocklist(firebaseUser.getUid());
-            FirebaseDatabase.getInstance().getReference("Blocklist")
-                    .child(userid)
-                    .child(blocklist.getId()).setValue(blocklist);
-
-
-            typemessage.setVisibility(View.GONE);
-            sendbtn.setVisibility(View.GONE);
-            blockTV.setVisibility(View.VISIBLE);
-
-        }
-
-
-        if(id==R.id.unblock){
-
-
-            Blocklist blocklist = new Blocklist(firebaseUser.getUid());
-            FirebaseDatabase.getInstance().getReference("Blocklist")
-                    .child(userid)
-                    .child(blocklist.getId()).setValue(blocklist);
-
-            typemessage.setVisibility(View.VISIBLE);
-            sendbtn.setVisibility(View.VISIBLE);
-            blockTV.setVisibility(View.GONE);
-
-            isFinalized=false;
-
-
-
-        }
 
 
 
 
 
 
-        return super.onOptionsItemSelected(item);
-    }
+
+
+
+
+
 
 
 
@@ -440,6 +455,105 @@ public class Messages extends AppCompatActivity {
             }
         });
 
+
+    }
+
+
+
+
+
+
+
+
+    @SuppressLint("ResourceType")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.message_menu, menu);
+
+        //getMenuInflater().inflate(R.menu.message_menu, menu);
+
+
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
+
+        menu.findItem(R.id.unblock).setEnabled(isFinalized);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.block) {
+
+
+
+
+            Blocklist blocklist = new Blocklist(userid);
+            FirebaseDatabase.getInstance().getReference("Blocklist")
+                    .child(firebaseUser.getUid())
+                    .child(blocklist.getId()).setValue(blocklist);
+
+
+            typemessage.setVisibility(View.GONE);
+            sendbtn.setVisibility(View.GONE);
+            blockTV.setVisibility(View.VISIBLE);
+
+        }
+
+
+        if(id==R.id.unblock){
+
+
+            Blocklist blocklist = new Blocklist(userid);
+            FirebaseDatabase.getInstance().getReference("Blocklist")
+                    .child(firebaseUser.getUid())
+                    .child(blocklist.getId()).removeValue();
+
+            typemessage.setVisibility(View.VISIBLE);
+            sendbtn.setVisibility(View.VISIBLE);
+            blockTV.setVisibility(View.GONE);
+
+            isFinalized=false;
+
+
+
+        }
+
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+
+
+
+
+    @Override
+    protected void onPause() {
+
+        super.onPause();
+
+
+        reference.removeEventListener(isseen);
 
     }
 

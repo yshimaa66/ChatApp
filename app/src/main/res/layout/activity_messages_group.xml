@@ -21,16 +21,18 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_imagemessage"
-            android:layout_width="40sp"
-            android:layout_height="40sp"
+            android:layout_width="60sp"
+            android:layout_height="60sp"
             app:civ_border_width="2sp"
             android:layout_marginStart="70sp"
-            android:layout_marginTop="15sp"
+            android:layout_marginTop="50sp"
             />
 
         <TextView
             android:id="@+id/username"
-            android:layout_marginTop="20sp"
+            android:fontFamily="@font/novusbold"
+            android:textColor="#fff"
+            android:layout_marginTop="60sp"
             android:layout_marginStart="140sp"
             android:text="@string/Groupname"
             android:textAlignment="center"
@@ -61,7 +63,7 @@
             android:layout_marginBottom="70sp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/blockTV"
+            android:layout_above="@id/leftTV"
 
             >
 
@@ -70,12 +72,10 @@
 
 
         <TextView
-            android:id="@+id/blockTV"
-            android:layout_width="match_parent"
+            android:id="@+id/leftTV"
+            android:layout_width="wrap_content"
             android:layout_marginBottom="0sp"
-
             android:visibility="gone"
-            android:text=" You can't reply to this conversation anymore "
             android:textSize="20sp"
             android:layout_alignParentBottom="true"
             android:background="@color/colorPrimary"

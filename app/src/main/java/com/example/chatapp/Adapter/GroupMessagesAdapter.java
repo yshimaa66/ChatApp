@@ -88,6 +88,8 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
         holder.showmessage.setText(cchat.getMessage());
 
+        holder.messagetime.setText(cchat.getTime());
+
 
         final String[] usernamestr = new String[1];
 
@@ -152,6 +154,7 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
         public TextView username;
 
+        public TextView messagetime;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -161,6 +164,7 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
             username=itemView.findViewById(R.id.username);
 
+            messagetime=itemView.findViewById(R.id.messagetime);
 
 
         }

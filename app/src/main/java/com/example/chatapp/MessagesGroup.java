@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapp.Adapter.GroupAdapter;
 import com.example.chatapp.Adapter.GroupMessagesAdapter;
 import com.example.chatapp.Adapter.MessagesAdapter;
 import com.example.chatapp.Fragment.Group;
@@ -37,6 +38,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -67,11 +70,15 @@ public class MessagesGroup extends AppCompatActivity {
     RecyclerView recyclerView;
 
 
-    String userid;
+    String groupid;
 
     Intent intent;
 
-    TextView blockTV;
+    TextView leftTV;
+
+    ValueEventListener isseen;
+
+    int i,j;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +89,10 @@ public class MessagesGroup extends AppCompatActivity {
         sendbtn=(Button)findViewById(R.id.sendbtn);
         typemessage=(EditText)findViewById(R.id.typemessage);
 
-        blockTV = findViewById(R.id.blockTV);
+        leftTV = findViewById(R.id.leftTV);
 
 
-        blockTV.setVisibility(View.GONE);
+        leftTV.setVisibility(View.GONE);
 
 
 
@@ -118,9 +125,9 @@ public class MessagesGroup extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        userid = intent.getStringExtra("groupid");
+        groupid = intent.getStringExtra("groupid");
 
-        Toast.makeText(this, userid, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, groupid, Toast.LENGTH_LONG).show();
 
 
 
@@ -135,12 +142,7 @@ public class MessagesGroup extends AppCompatActivity {
 
 
 
-
-
-
-
-
-        reference = FirebaseDatabase.getInstance().getReference("Groups").child(userid);
+        reference = FirebaseDatabase.getInstance().getReference("Groups").child(groupid);
 
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -210,7 +212,7 @@ public class MessagesGroup extends AppCompatActivity {
 
 
 
-        reference = FirebaseDatabase.getInstance().getReference("Groups").child(userid);
+        reference = FirebaseDatabase.getInstance().getReference("Groups").child(groupid);
 
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -234,6 +236,8 @@ public class MessagesGroup extends AppCompatActivity {
                     Glide.with(MessagesGroup.this).load(groupsModel.getImageURL()).into(profileimage);
 
                 }
+
+
                 readmessages(firebaseUser.getUid(), groupsModel.getGroupid(),groupsModel.getImageURL());
 
             }
@@ -245,11 +249,16 @@ public class MessagesGroup extends AppCompatActivity {
 
 
         });
+
+
+
+
     }
 
 
     private void sendmessage(String sender, String groupid, String message){
 
+        String currenttime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
 
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
 
@@ -258,13 +267,30 @@ public class MessagesGroup extends AppCompatActivity {
         hashMap.put("sender",sender);
         hashMap.put("groupid",groupid);
         hashMap.put("message",message);
+        hashMap.put("time",currenttime);
+
 
         reference.child("GroupChats").push().setValue(hashMap);
+
+
+        /*DatabaseReference referencee=FirebaseDatabase.getInstance().getReference();
+
+        HashMap<String,Object> hashhMap= new HashMap<>();
+
+        hashMap.put("sender",sender);
+        hashMap.put("groupid",groupid);
+        hashMap.put("message",message);
+        hashMap.put("time",currenttime);
+
+        hashMap.put("isseen",false);
+
+        reference.child("GroupChats").push().setValue(hashMap);*/
 
 
 
 
     }
+
 
 
 
@@ -317,6 +343,14 @@ public class MessagesGroup extends AppCompatActivity {
 
 
 
+
+
+
+
+
+
+
+
     @SuppressLint("ResourceType")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -324,7 +358,7 @@ public class MessagesGroup extends AppCompatActivity {
 
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.message_menu, menu);
+        inflater.inflate(R.menu.group_menu, menu);
 
         //getMenuInflater().inflate(R.menu.message_menu, menu);
 
@@ -333,13 +367,6 @@ public class MessagesGroup extends AppCompatActivity {
     }
 
 
-
-    @Override
-    public boolean onPrepareOptionsMenu (Menu menu) {
-
-        menu.findItem(R.id.unblock).setEnabled(isFinalized);
-        return true;
-    }
 
 
 
@@ -351,41 +378,109 @@ public class MessagesGroup extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.block) {
 
 
 
-
-            Blocklist blocklist = new Blocklist(firebaseUser.getUid());
-            FirebaseDatabase.getInstance().getReference("Blocklist")
-                    .child(userid)
-                    .child(blocklist.getId()).setValue(blocklist);
+        if(id==R.id.groupinfo){
 
 
-            typemessage.setVisibility(View.GONE);
-            sendbtn.setVisibility(View.GONE);
-            blockTV.setVisibility(View.VISIBLE);
-
-        }
+            Intent intent = new Intent(this, GroupInfo.class);
+            intent.putExtra("groupid",groupid);
+            startActivity(intent);
 
 
-        if(id==R.id.unblock){
-
-
-            Blocklist blocklist = new Blocklist(firebaseUser.getUid());
-            FirebaseDatabase.getInstance().getReference("Blocklist")
-                    .child(userid)
-                    .child(blocklist.getId()).setValue(blocklist);
-
-            typemessage.setVisibility(View.VISIBLE);
-            sendbtn.setVisibility(View.VISIBLE);
-            blockTV.setVisibility(View.GONE);
-
-            isFinalized=false;
 
 
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+        if (id == R.id.leave) {
+
+
+
+
+            final FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+            DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Groups");
+
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+
+
+                    for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+
+                        GroupsModel group = snapshot.getValue(GroupsModel.class);
+
+
+                        assert group != null;
+
+                        if(group.getGroupid().equals(groupid)) {
+
+                            for (int i = 0; i < group.getUser().size(); i++) {
+
+                                if (group.getUser().get(i).getId().equals(firebaseUser.getUid())) {
+
+
+
+
+
+                                    FirebaseDatabase.getInstance().getReference("Groups")
+                                            .child(groupid).child("user").child(i+"").removeValue();
+
+
+
+                                    Intent intent = new Intent(MessagesGroup.this,Home.class);
+                                    startActivity(intent);
+
+
+
+                                   //group.getUser().get(i).getUsername();
+
+                                }
+
+
+                            }
+
+                        }
+
+
+                    }
+
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+
+
+
+
+
+
+            Toast.makeText(this, "You leaved the group", Toast.LENGTH_SHORT).show();
+
+        }
+
+
+
 
 
 
@@ -397,91 +492,6 @@ public class MessagesGroup extends AppCompatActivity {
 
 
 
-
-    private void userblocklist(final String useridtocheck){
-
-
-        final FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Blocklist").child(firebaseUser.getUid());
-
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-
-                    Blocklist blockeduser = snapshot.getValue(Blocklist.class);
-
-
-                    assert blockeduser != null;
-
-                    if(blockeduser.getId().equals(useridtocheck)){
-
-                        typemessage.setVisibility(View.GONE);
-                        sendbtn.setVisibility(View.GONE);
-                        blockTV.setVisibility(View.VISIBLE);
-
-                        isFinalized= true;
-
-                    }
-
-                }
-
-
-
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-        final FirebaseUser firebaseUserr= FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference referencee= FirebaseDatabase.getInstance().getReference("Blocklist").child(useridtocheck);
-
-        referencee.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
-
-                    Blocklist blockeduser = snapshot.getValue(Blocklist.class);
-
-
-                    assert blockeduser != null;
-
-                    if(blockeduser.getId().equals(firebaseUserr.getUid())){
-
-                        typemessage.setVisibility(View.GONE);
-                        sendbtn.setVisibility(View.GONE);
-                        blockTV.setVisibility(View.VISIBLE);
-
-
-                    }
-
-                }
-
-
-
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-    }
 
 
 }

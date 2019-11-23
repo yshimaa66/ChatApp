@@ -18,4 +18,10 @@
     <string name="UnBlock">Unblock</string>
     <string name="Groupname">Group name</string>
     <string name="AddGroup">Add Group</string>
+    <string name="messagetime">message time</string>
+    <string name="Leave">Leave</string>
+    <string name="members">Members</string>
+    <string name="Groupinfo">Group info</string>
+    <string name="Lastmessage">Last message</string>
+    <string name="isseen">is seen</string>
 </resources>

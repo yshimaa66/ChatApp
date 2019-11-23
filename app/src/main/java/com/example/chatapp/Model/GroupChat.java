@@ -9,11 +9,32 @@ public class GroupChat {
     private String message;
     private String groupid;
 
+    private String time;
 
-    public GroupChat(String sender, String message, String groupid) {
+    boolean isseen;
+
+    public GroupChat(String sender, String message, String groupid, String time, boolean isseen) {
         this.sender = sender;
         this.message = message;
         this.groupid = groupid;
+        this.time = time;
+        this.isseen = isseen;
+    }
+
+    public boolean isIsseen() {
+        return isseen;
+    }
+
+    public void setIsseen(boolean isseen) {
+        this.isseen = isseen;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public GroupChat() {

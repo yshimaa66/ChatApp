@@ -132,25 +132,6 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         return view;
     }
 

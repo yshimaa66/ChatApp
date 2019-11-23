@@ -15,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MessagesGroup"></activity>
+        <activity android:name=".GroupInfo"></activity>
+        <activity android:name=".MessagesGroup" />
         <activity android:name=".AddGroup" />
         <activity android:name=".group_item" />
         <activity android:name=".Messages" />

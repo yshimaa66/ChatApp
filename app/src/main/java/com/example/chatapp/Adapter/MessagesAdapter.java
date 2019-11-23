@@ -68,13 +68,26 @@ private String imageurl;
 
 
     @Override
-    public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
 
-        final Chat cchat=chat.get(position);
+        Chat cchat=chat.get(position);
 
         holder.showmessage.setText(cchat.getMessage());
 
+        holder.messagetime.setText(cchat.getTime());
+
+
+
+            if(cchat.isIsseen()){
+
+                holder.seen.setVisibility(View.VISIBLE);
+
+            }
+
+            else{
+               holder.unseen.setVisibility(View.VISIBLE);
+            }
 
 
 
@@ -90,7 +103,9 @@ private String imageurl;
 
         public TextView showmessage;
 
+        public TextView messagetime;
 
+        public ImageView seen,unseen;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -98,6 +113,13 @@ private String imageurl;
 
             showmessage=itemView.findViewById(R.id.showmessage);
 
+
+            messagetime=itemView.findViewById(R.id.messagetime);
+
+
+            seen=itemView.findViewById(R.id.seen);
+
+            unseen=itemView.findViewById(R.id.unseen);
 
 
         }
@@ -119,5 +141,7 @@ private String imageurl;
 
         }
     }
+
+
 }
 

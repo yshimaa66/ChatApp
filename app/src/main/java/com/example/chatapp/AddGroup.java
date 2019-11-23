@@ -2,6 +2,7 @@ package com.example.chatapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import com.example.chatapp.Model.Chatlist;
 import com.example.chatapp.Model.GroupsModel;
 import com.example.chatapp.Model.User;
 import com.example.chatapp.Model.UserGroupModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -32,10 +34,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class AddGroup extends AppCompatActivity {
 
     protected EditText groupnameEditText;
-    protected Button addbtn;
+    protected FloatingActionButton addbtn;
+
+    public static int nm=0;
 
     private RecyclerView recyclerView;
     private UserGroupAdapter userAdapter;
@@ -45,9 +51,14 @@ public class AddGroup extends AppCompatActivity {
     public static List<Chatlist> userList;
 
 
+    public static List<User>userstoaddtogroup;
+
+
     FirebaseUser firebaseUser;
 
     DatabaseReference reference;
+
+    public static int ug=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +72,61 @@ public class AddGroup extends AppCompatActivity {
         userList = new ArrayList<>();
 
 
+        userstoaddtogroup=new ArrayList<>();
+
+
+
+
+
+        final FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference= FirebaseDatabase.getInstance().getReference("Users");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+               userstoaddtogroup.clear();
+
+
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+
+                    User user = snapshot.getValue(User.class);
+
+                    if(user.getId().equals(firebaseUser.getUid())){
+
+
+                        userstoaddtogroup.add(user);
+
+
+                    }
+
+                }
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+
+
+
+
         recyclerView = findViewById(R.id.recyclerviewuserstoaddtogroup);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(AddGroup.this));
 
 
         groupnameEditText = (EditText) findViewById(R.id.groupnameEditText);
-        addbtn = (Button) findViewById(R.id.addbtn);
+        addbtn = findViewById(R.id.addbtn);
 
 
         addbtn.setOnClickListener(new View.OnClickListener() {
@@ -75,15 +134,29 @@ public class AddGroup extends AppCompatActivity {
             public void onClick(View v) {
 
 
+            String groupnamestr=groupnameEditText.getText().toString();
 
-                String groupnamestr=groupnameEditText.getText().toString();
+                if(groupnamestr.equals("")){
 
-                Toast.makeText(AddGroup.this, UserGroupAdapter.userstoaddtogroup.size()+"", Toast.LENGTH_SHORT).show();
+                    groupnameEditText.setError("Required");
+
+
+                }
+
+                else if(userstoaddtogroup.size()<=2){
+
+                    Toast.makeText(AddGroup.this, "You need to create a group to select more friends", Toast.LENGTH_SHORT).show();
+
+                }
+
+                else{
+
 
                 long time= System.currentTimeMillis();
 
                     //UserGroupModel userGroupModel = new UserGroupModel(UserGroupAdapter.userstoaddtogroup.get(i).getId());
-                    GroupsModel groupsModel = new GroupsModel(firebaseUser.getUid()+groupnamestr+time,firebaseUser.getUid(),groupnamestr,"default",UserGroupAdapter.userstoaddtogroup);
+                    GroupsModel groupsModel = new GroupsModel(firebaseUser.getUid()+groupnamestr+time
+                            ,firebaseUser.getUid(),groupnamestr,"default",userstoaddtogroup);
                     FirebaseDatabase.getInstance().getReference("Groups")
                             .child(firebaseUser.getUid()+groupnamestr+time)
                             .setValue(groupsModel);
@@ -115,7 +188,7 @@ public class AddGroup extends AppCompatActivity {
 
                 finish();
 
-            }
+            }}
         });
 
 
