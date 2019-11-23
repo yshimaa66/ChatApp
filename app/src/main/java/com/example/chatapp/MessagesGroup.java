@@ -1,6 +1,7 @@
 package com.example.chatapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.icu.text.SimpleDateFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -167,6 +170,7 @@ public class MessagesGroup extends AppCompatActivity {
 
                 }
                 sendbtn.setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onClick(View v) {
 
@@ -256,18 +260,84 @@ public class MessagesGroup extends AppCompatActivity {
     }
 
 
-    private void sendmessage(String sender, String groupid, String message){
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void sendmessage(String sender, final String groupid, String message){
 
-        String currenttime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+        //String currenttime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+
+        final String currentDateandTime = new SimpleDateFormat("EEE  MMM d, yyyy h:mm a").format(new Date());
 
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
 
-        HashMap<String,Object> hashMap= new HashMap<>();
+        final HashMap<String,Object> hashMap= new HashMap<>();
 
         hashMap.put("sender",sender);
         hashMap.put("groupid",groupid);
         hashMap.put("message",message);
-        hashMap.put("time",currenttime);
+        hashMap.put("time",currentDateandTime);
+
+
+
+
+
+
+
+/*
+
+
+        final FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference referencee= FirebaseDatabase.getInstance().getReference("Groups");
+
+        referencee.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+
+
+                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+
+                    GroupsModel group = snapshot.getValue(GroupsModel.class);
+
+                    if(group.getGroupid().equals(groupid)){
+
+                    for(int i=0;i<group.getUser().size();i++){
+
+                         hashMap.put(group.getUser().get(i).getId(),"false");
+
+
+
+                        }
+
+
+
+
+                    }
+
+
+
+
+                }
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+*/
+
+
+
+
+
+
 
 
         reference.child("GroupChats").push().setValue(hashMap);

@@ -116,14 +116,59 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.Viewholder> 
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    GroupChat cchat = snapshot.getValue(GroupChat.class);
+                    final GroupChat cchat = snapshot.getValue(GroupChat.class);
 
-                    if (!cchat.getSender().equals(firebaseUser.getUid())) {
+                    if (cchat.getGroupid().equals(groupsModel.getGroupid())) {
 
 
-/*
+                            final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-                        holder.senderreciever.setText(groupsModel);
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+
+                            reference.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                                        User user = snapshot.getValue(User.class);
+
+                                        assert user != null;
+                                        assert firebaseUser != null;
+
+                                        if (user.getId().equals(cchat.getSender())) {
+
+                                            if(user.getId().equals(firebaseUser.getUid())){
+
+                                                holder.senderreciever.setText("You");
+
+                                            }else {
+                                                holder.senderreciever.setText(user.getUsername());
+
+                                            }
+                                        }
+
+                                    }
+
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+
+
+
+
+
+
+
+
+
                         holder.lastmessage.setText(": "+cchat.getMessage()+" ");
                         holder.lastmessagetime.setText(cchat.getTime());
 
@@ -131,7 +176,7 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.Viewholder> 
 
                         holder.lastmessagetime.setVisibility(View.VISIBLE);
 
-                        holder.senderreciever.setVisibility(View.VISIBLE);*/
+                        holder.senderreciever.setVisibility(View.VISIBLE);
 
 
 
@@ -184,6 +229,8 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.Viewholder> 
         public ImageView havemessage;
 
 
+        public TextView lastmessage,lastmessagetime,senderreciever;
+
         public Viewholder(@NonNull View itemView) {
 
             super(itemView);
@@ -194,6 +241,13 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.Viewholder> 
             havemessage=itemView.findViewById(R.id.havemessage);
 
 
+            lastmessage = itemView.findViewById(R.id.lastmessage);
+
+            lastmessagetime=itemView.findViewById(R.id.lastmessagetime);
+
+            senderreciever=itemView.findViewById(R.id.senderreciever);
+
+            havemessage=itemView.findViewById(R.id.havemessage);
 
         }
     }

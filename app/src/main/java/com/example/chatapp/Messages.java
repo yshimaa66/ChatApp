@@ -57,7 +57,7 @@ public class Messages extends AppCompatActivity {
     FirebaseUser firebaseUser;
     DatabaseReference reference;
 
-    boolean isFinalized;
+    boolean isFinalized, isFinalizzed;
 
 
     ValueEventListener isseen;
@@ -130,11 +130,14 @@ public class Messages extends AppCompatActivity {
 
         isFinalized= false;
 
+        isFinalizzed=true;
+
         userblocklist(userid);
 
 
 
         sendbtn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
 
@@ -209,10 +212,13 @@ public class Messages extends AppCompatActivity {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void sendmessage(String sender, String receiver, String message){
 
 
-        String currenttime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+        //String currenttime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
+
+        String currentDateandTime = new SimpleDateFormat("EEE  MMM d, yyyy h:mm a").format(new Date());
 
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
 
@@ -221,7 +227,7 @@ public class Messages extends AppCompatActivity {
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
-        hashMap.put("time",currenttime);
+        hashMap.put("time",currentDateandTime);
 
         hashMap.put("isseen",false);
 
@@ -399,6 +405,8 @@ public class Messages extends AppCompatActivity {
 
                         isFinalized= true;
 
+                        isFinalizzed=false;
+
                     }
 
                 }
@@ -437,6 +445,8 @@ public class Messages extends AppCompatActivity {
                         typemessage.setVisibility(View.GONE);
                         sendbtn.setVisibility(View.GONE);
                         blockTV.setVisibility(View.VISIBLE);
+
+                        isFinalizzed=false;
 
 
                     }
@@ -485,6 +495,8 @@ public class Messages extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
 
+        menu.findItem(R.id.block).setEnabled(isFinalizzed);
+
         menu.findItem(R.id.unblock).setEnabled(isFinalized);
         return true;
     }
@@ -531,6 +543,8 @@ public class Messages extends AppCompatActivity {
 
             isFinalized=false;
 
+
+            isFinalizzed=true;
 
 
         }
