@@ -1,3 +1,4 @@
+
 package com.example.chatapp.Adapter;
 
 import android.content.Context;
@@ -102,15 +103,25 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.Viewholder> {
 
 
 
-                     holder.senderreciever.setText(user.getUsername());
-                     holder.lastmessage.setText(": "+cchat.getMessage()+" ");
-                     holder.lastmessagetime.setText(cchat.getTime());
+                        holder.senderreciever.setText(user.getUsername());
 
-                     holder.lastmessage.setVisibility(View.VISIBLE);
 
-                     holder.lastmessagetime.setVisibility(View.VISIBLE);
+                        if(cchat.getMessage().contains("https://firebasestorage.googleapis.com/v0/b/chatapp-9b682.appspot.com/o/uploads%")){
 
-                     holder.senderreciever.setVisibility(View.VISIBLE);
+                            holder.lastmessage.setText("sent a photo ");
+                        }else{
+
+                            holder.lastmessage.setText(": "+cchat.getMessage()+" ");
+
+                        }
+
+                        holder.lastmessagetime.setText(cchat.getTime());
+
+                        holder.lastmessage.setVisibility(View.VISIBLE);
+
+                        holder.lastmessagetime.setVisibility(View.VISIBLE);
+
+                        holder.senderreciever.setVisibility(View.VISIBLE);
 
 
                         if(!cchat.isIsseen() && cchat.getReceiver().equals(firebaseUser.getUid())){
@@ -131,13 +142,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.Viewholder> {
                     }
 
 
-                   else if (cchat.getSender().equals(firebaseUser.getUid()) && cchat.getReceiver().equals(user.getId())) {
+                    else if (cchat.getSender().equals(firebaseUser.getUid()) && cchat.getReceiver().equals(user.getId())) {
 
 
 
 
                         holder.senderreciever.setText("You");
-                        holder.lastmessage.setText(": "+cchat.getMessage()+" ");
+                        if(cchat.getMessage().contains("https://firebasestorage.googleapis.com/v0/b/chatapp-9b682.appspot.com/o/uploads%")){
+
+                            holder.lastmessage.setText("sent a photo ");
+                        }else{
+
+                            holder.lastmessage.setText(": "+cchat.getMessage()+" ");
+
+                        }
                         holder.lastmessagetime.setText(cchat.getTime());
 
 

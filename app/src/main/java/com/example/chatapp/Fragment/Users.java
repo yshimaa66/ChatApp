@@ -127,6 +127,7 @@ public class Users extends Fragment implements SearchView.OnQueryTextListener {
                     if(!user.getId().equals(firebaseUser.getUid())){
 
 
+
                         users.add(user);
 
 

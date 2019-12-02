@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,9 +12,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.chatapp.Fragment.Group;
+import com.example.chatapp.GroupInfo;
+import com.example.chatapp.MessagesGroup;
 import com.example.chatapp.Model.Chat;
 import com.example.chatapp.Model.GroupChat;
+import com.example.chatapp.Model.GroupsModel;
 import com.example.chatapp.Model.User;
 import com.example.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdapter.ViewHolder>{
@@ -33,6 +39,7 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
     public static final int message_left=0;
     public static final int message_right=1;
 
+    int hhh = 0 , hh =0 ;
 
 
     private Context context;
@@ -86,7 +93,20 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
         final GroupChat cchat= groupchat.get(position);
 
-        holder.showmessage.setText(cchat.getMessage());
+
+        if(cchat.getMessage().contains("https://firebasestorage.googleapis.com/v0/b/chatapp-9b682.appspot.com/o/uploads%")){
+
+            Glide.with(context).load(cchat.getMessage()).into(holder.sentedphoto);
+            holder.sentedphoto.setVisibility(View.VISIBLE);
+            holder.showmessage.setVisibility(View.GONE);
+
+        }else{
+
+            holder.showmessage.setText(cchat.getMessage());
+            holder.sentedphoto.setVisibility(View.GONE);
+            holder.showmessage.setVisibility(View.VISIBLE);
+
+        }
 
         holder.messagetime.setText(cchat.getTime());
 
@@ -136,6 +156,19 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
 
 
+        if(cchat.isIsseenall()){
+
+            holder.seen.setVisibility(View.VISIBLE);
+            holder.unseen.setVisibility(View.GONE);
+
+        }
+
+        else{
+            holder.unseen.setVisibility(View.VISIBLE);
+            holder.seen.setVisibility(View.GONE);
+        }
+
+
 
 
 
@@ -156,6 +189,7 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
         public TextView messagetime;
 
+        public ImageView seen,unseen,sentedphoto;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -166,6 +200,12 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
             messagetime=itemView.findViewById(R.id.messagetime);
 
+
+            seen=itemView.findViewById(R.id.seen);
+
+            unseen=itemView.findViewById(R.id.unseen);
+
+            sentedphoto=itemView.findViewById(R.id.sentedphoto);
 
         }
     }

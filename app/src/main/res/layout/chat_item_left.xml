@@ -25,35 +25,43 @@
             >
 
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/showmessage"
-        android:text="@string/message"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/showmessage"
+                android:text="@string/message"
 
-        android:layout_marginTop="10sp"
-        android:layout_marginStart="20sp"
-        android:layout_centerVertical="true"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_alignParentStart="true"
+                android:layout_marginTop="10sp"
+                android:layout_marginStart="20sp"
+                android:layout_centerVertical="true"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"
 
-        />
+                />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/messagetime"
-            android:text="@string/messagetime"
-            android:layout_marginTop="10sp"
-            android:layout_marginStart="150sp"
-            android:layout_marginBottom="8sp"
-            android:layout_centerVertical="true"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:layout_alignParentStart="true"
+            <ImageView
+                android:id="@+id/sentedphoto"
+                android:layout_marginStart="10sp"
+                android:layout_marginTop="10sp"
+                android:layout_width="250sp"
+                android:visibility="gone"
+                android:layout_height="300sp"/>
 
-            />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/messagetime"
+                android:text="@string/messagetime"
+                android:layout_marginTop="10sp"
+                android:layout_marginStart="150sp"
+                android:layout_marginBottom="8sp"
+                android:layout_centerVertical="true"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:layout_alignParentStart="true"
+
+                />
 
             <ImageView
                 android:layout_width="wrap_content"

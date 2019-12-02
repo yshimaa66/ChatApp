@@ -11,21 +11,32 @@ public class GroupChat {
 
     private String time;
 
-    boolean isseen;
+    List<String> isseen;
 
-    public GroupChat(String sender, String message, String groupid, String time, boolean isseen) {
+    boolean isseenall;
+
+    public GroupChat(String sender, String message, String groupid, String time, List<String> isseen,boolean isseenall) {
         this.sender = sender;
         this.message = message;
         this.groupid = groupid;
         this.time = time;
         this.isseen = isseen;
+        this.isseenall=isseenall;
     }
 
-    public boolean isIsseen() {
+    public boolean isIsseenall() {
+        return isseenall;
+    }
+
+    public void setIsseenall(boolean isseenall) {
+        this.isseenall = isseenall;
+    }
+
+    public List<String> getIsseen() {
         return isseen;
     }
 
-    public void setIsseen(boolean isseen) {
+    public void setIsseen(List<String> isseen) {
         this.isseen = isseen;
     }
 

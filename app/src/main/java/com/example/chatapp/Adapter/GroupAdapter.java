@@ -78,14 +78,14 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.Viewholder> 
                 intent.putExtra("groupid",groupsModel.getGroupid());
                 context.startActivity(intent);
 
-               // Toast.makeText(context, groupsModel.getGroupid()+"", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(context, groupsModel.getGroupid()+"", Toast.LENGTH_SHORT).show();
 
 
             }
         });
 
 
-       if(groupsModel.getImageURL().equals("default")){
+        if(groupsModel.getImageURL().equals("default")){
             holder.groupimage.setImageResource(R.drawable.ic_groupphoto);
         }else{
 
@@ -121,55 +121,60 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.Viewholder> 
                     if (cchat.getGroupid().equals(groupsModel.getGroupid())) {
 
 
-                            final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
 
-                            reference.addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        reference.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
 
-                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                                        User user = snapshot.getValue(User.class);
+                                    User user = snapshot.getValue(User.class);
 
-                                        assert user != null;
-                                        assert firebaseUser != null;
+                                    assert user != null;
+                                    assert firebaseUser != null;
 
-                                        if (user.getId().equals(cchat.getSender())) {
+                                    if (user.getId().equals(cchat.getSender())) {
 
-                                            if(user.getId().equals(firebaseUser.getUid())){
+                                        if(user.getId().equals(firebaseUser.getUid())){
 
-                                                holder.senderreciever.setText("You");
+                                            holder.senderreciever.setText("You");
 
-                                            }else {
-                                                holder.senderreciever.setText(user.getUsername());
+                                        }else {
+                                            holder.senderreciever.setText(user.getUsername());
 
-                                            }
                                         }
-
                                     }
 
-
                                 }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                }
-                            });
+                            }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-
-
-
+                            }
+                        });
 
 
 
 
 
-                        holder.lastmessage.setText(": "+cchat.getMessage()+" ");
+
+
+
+                        if(cchat.getMessage().contains("https://firebasestorage.googleapis.com/v0/b/chatapp-9b682.appspot.com/o/uploads%")){
+
+                            holder.lastmessage.setText("sent a photo ");
+                        }else{
+
+                            holder.lastmessage.setText(": "+cchat.getMessage()+" ");
+
+                        }
                         holder.lastmessagetime.setText(cchat.getTime());
 
                         holder.lastmessage.setVisibility(View.VISIBLE);
@@ -178,7 +183,34 @@ public class GroupAdapter extends RecyclerView.Adapter<GroupAdapter.Viewholder> 
 
                         holder.senderreciever.setVisibility(View.VISIBLE);
 
+                        int j=0;
 
+                        for(int i=0;i<cchat.getIsseen().size();i++){
+
+                            if(!cchat.getIsseen().get(i).equals(firebaseUser.getUid())){
+
+                                j=1;
+
+                            }else{
+
+                                j=0;
+                                break;
+
+                            }
+
+
+                        }
+
+                        if(j==1){
+
+                            holder.havemessage.setVisibility(View.VISIBLE);
+
+                        }else{
+
+                            holder.havemessage.setVisibility(View.GONE);
+
+
+                        }
 
 
                     }

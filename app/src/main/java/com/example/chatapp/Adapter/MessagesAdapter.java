@@ -35,7 +35,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     private List<GroupChat> groupchat;
 
 
-private String imageurl;
+    private String imageurl;
 
     FirebaseUser firebaseUser;
 
@@ -73,21 +73,38 @@ private String imageurl;
 
         Chat cchat=chat.get(position);
 
-        holder.showmessage.setText(cchat.getMessage());
+
+        if(cchat.getMessage().contains("https://firebasestorage.googleapis.com/v0/b/chatapp-9b682.appspot.com/o/uploads%")){
+
+            Glide.with(context).load(cchat.getMessage()).into(holder.sentedphoto);
+            holder.sentedphoto.setVisibility(View.VISIBLE);
+            holder.showmessage.setVisibility(View.GONE);
+
+        }else{
+
+            holder.showmessage.setText(cchat.getMessage());
+            holder.sentedphoto.setVisibility(View.GONE);
+            holder.showmessage.setVisibility(View.VISIBLE);
+
+        }
+
 
         holder.messagetime.setText(cchat.getTime());
 
 
 
-            if(cchat.isIsseen()){
 
-                holder.seen.setVisibility(View.VISIBLE);
+        if(cchat.isIsseen()){
 
-            }
+            holder.seen.setVisibility(View.VISIBLE);
+            holder.unseen.setVisibility(View.GONE);
 
-            else{
-               holder.unseen.setVisibility(View.VISIBLE);
-            }
+        }
+
+        else{
+            holder.unseen.setVisibility(View.VISIBLE);
+            holder.seen.setVisibility(View.GONE);
+        }
 
 
 
@@ -105,7 +122,7 @@ private String imageurl;
 
         public TextView messagetime;
 
-        public ImageView seen,unseen;
+        public ImageView seen,unseen,sentedphoto;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -120,6 +137,9 @@ private String imageurl;
             seen=itemView.findViewById(R.id.seen);
 
             unseen=itemView.findViewById(R.id.unseen);
+
+
+            sentedphoto=itemView.findViewById(R.id.sentedphoto);
 
 
         }
@@ -144,4 +164,3 @@ private String imageurl;
 
 
 }
-

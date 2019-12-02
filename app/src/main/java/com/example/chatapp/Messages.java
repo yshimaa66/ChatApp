@@ -1,6 +1,7 @@
 package com.example.chatapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,14 +9,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,17 +29,32 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.chatapp.Adapter.MessagesAdapter;
 import com.example.chatapp.Adapter.UserAdapter;
+import com.example.chatapp.Fragment.APIService;
 import com.example.chatapp.Model.Blocklist;
 import com.example.chatapp.Model.Chat;
 import com.example.chatapp.Model.Chatlist;
 import com.example.chatapp.Model.User;
+import com.example.chatapp.Notification.Client;
+import com.example.chatapp.Notification.Data;
+import com.example.chatapp.Notification.MyResponse;
+import com.example.chatapp.Notification.Sender;
+import com.example.chatapp.Notification.Token;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -45,10 +65,15 @@ import java.util.List;
 import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Messages extends AppCompatActivity {
 
 
+
+    APIService apiService;
 
     CircleImageView profileimage;
 
@@ -57,12 +82,12 @@ public class Messages extends AppCompatActivity {
     FirebaseUser firebaseUser;
     DatabaseReference reference;
 
-    boolean isFinalized, isFinalizzed;
+    boolean isFinalized;
 
 
     ValueEventListener isseen;
 
-    Button sendbtn;
+    Button sendbtn,sendphotobtn;
     EditText typemessage;
 
 
@@ -71,10 +96,16 @@ public class Messages extends AppCompatActivity {
 
     RecyclerView recyclerView;
 
+    StorageReference storageReference;
+    private static final int image_request = 1;
+    private Uri imageuri;
+    private StorageTask<UploadTask.TaskSnapshot> uploadtask;
 
     String userid;
 
     Intent intent;
+
+    boolean notify = false;
 
     TextView blockTV;
 
@@ -92,6 +123,26 @@ public class Messages extends AppCompatActivity {
         blockTV.setVisibility(View.GONE);
 
 
+        apiService= Client.getClient("https://fcm.googleapis.com/").create(APIService.class);
+
+
+        sendphotobtn=findViewById(R.id.sendphotobtn);
+
+        storageReference= FirebaseStorage.getInstance().getReference("uploads");
+
+
+        sendphotobtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                OpenImage();
+
+                //typemessage.setText();
+
+
+            }
+        });
 
 
 
@@ -130,8 +181,6 @@ public class Messages extends AppCompatActivity {
 
         isFinalized= false;
 
-        isFinalizzed=true;
-
         userblocklist(userid);
 
 
@@ -140,6 +189,8 @@ public class Messages extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View v) {
+
+                notify=true;
 
                 String message=typemessage.getText().toString();
 
@@ -209,16 +260,160 @@ public class Messages extends AppCompatActivity {
     }
 
 
+    private void OpenImage() {
+
+
+        Intent galleryIntent=new Intent(Intent.ACTION_GET_CONTENT);
+        galleryIntent.setType("image/*");
+        startActivityForResult(galleryIntent,image_request);
+
+
+    }
+
+
+    private String getFileExtension(Uri uri){
+
+
+        ContentResolver contentResolver= this.getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+
+
+
+    }
+
+
+    private void uploadImage(){
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading");
+        progressDialog.show();
+
+
+
+        if(imageuri !=null){
+
+            final StorageReference fileReference= storageReference.child(System.currentTimeMillis()
+                    +"."+getFileExtension(imageuri));
+
+
+            uploadtask=fileReference.putFile(imageuri);
+
+            uploadtask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+
+                @Override
+                public Task<Uri> then(@NonNull Task <UploadTask.TaskSnapshot>task) throws Exception {
+
+
+                    if(!task.isSuccessful()){
+
+                        throw task.getException();
+
+                    }
+
+
+                    return fileReference.getDownloadUrl();
+
+
+                }
+            }).addOnCompleteListener(new OnCompleteListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onComplete(@NonNull Task task) {
+
+                    if(task.isSuccessful()) {
+                        Uri downloadUri = (Uri) task.getResult();
+
+                        String auri= downloadUri.toString();
+
+
+
+                        sendmessage(firebaseUser.getUid(), userid, auri);
+
+                        progressDialog.dismiss();
+
+
+                    }else{
+
+                        Toast.makeText(Messages.this,"Failed",Toast.LENGTH_SHORT).show();
+
+                        progressDialog.dismiss();
+
+                    }
+
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(Messages.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+
+
+
+
+                }
+            });
+
+
+        }else{
+
+
+            Toast.makeText(Messages.this,"No image selected",Toast.LENGTH_SHORT).show();
+
+        }
+
+
+
+
+
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+
+        if(requestCode==image_request && resultCode==RESULT_OK
+
+                && data != null && data.getData() != null
+        ) {
+
+            imageuri = data.getData();
+
+            if(uploadtask!=null &&  uploadtask.isInProgress()){
+
+
+
+                Toast.makeText(Messages.this,"Upload in progress",Toast.LENGTH_SHORT).show();
+
+
+
+            }else{
+
+                uploadImage();
+
+            }
+
+
+
+
+
+        }
+    }
 
 
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void sendmessage(String sender, String receiver, String message){
+    private void sendmessage(String sender, final String receiver, String message){
 
 
         //String currenttime = java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime());
 
-        String currentDateandTime = new SimpleDateFormat("EEE  MMM d, yyyy h:mm a").format(new Date());
+        final String currentDateandTime = new SimpleDateFormat("EEE  MMM d, yyyy h:mm a").format(new Date());
 
         DatabaseReference reference=FirebaseDatabase.getInstance().getReference();
 
@@ -247,8 +442,98 @@ public class Messages extends AppCompatActivity {
                 .child(chatlistt.getId()).setValue(chatlistt);
 
 
+
+
+
+        final String msg = message;
+
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                User user = dataSnapshot.getValue(User.class);
+
+                if(notify) {
+
+                    sendNotification(receiver, user.getUsername(), msg);
+
+                }
+
+                notify=false;
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
+    private void sendNotification(String receiver, final String username, final String msg) {
+
+
+        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+
+        Query query = tokens.orderByKey().equalTo(receiver);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+
+
+                    Token token = snapshot.getValue(Token.class);
+
+                    Data data = new Data(firebaseUser.getUid(),R.mipmap.ic_launcher
+                            ,username+ " : "+msg,"New Message",userid);
+
+
+                    Sender sender = new Sender(data,token.getToken());
+
+                    apiService.sendNotification(sender)
+                            .enqueue(new Callback<MyResponse>() {
+                                @Override
+                                public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+
+
+                                    if(response.code()==200){
+
+                                        if(response.body().success!=1){
+
+                                            Toast.makeText(Messages.this, "Failed !", Toast.LENGTH_SHORT).show();
+
+                                        }
+
+
+                                    }
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<MyResponse> call, Throwable t) {
+
+                                }
+                            });
+
+
+                    }
+
+                }
+
+
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 
     private void readmessages(final String myid, final String userid, final String imageurl) {
@@ -405,8 +690,6 @@ public class Messages extends AppCompatActivity {
 
                         isFinalized= true;
 
-                        isFinalizzed=false;
-
                     }
 
                 }
@@ -445,8 +728,6 @@ public class Messages extends AppCompatActivity {
                         typemessage.setVisibility(View.GONE);
                         sendbtn.setVisibility(View.GONE);
                         blockTV.setVisibility(View.VISIBLE);
-
-                        isFinalizzed=false;
 
 
                     }
@@ -495,8 +776,6 @@ public class Messages extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu (Menu menu) {
 
-        menu.findItem(R.id.block).setEnabled(isFinalizzed);
-
         menu.findItem(R.id.unblock).setEnabled(isFinalized);
         return true;
     }
@@ -524,6 +803,7 @@ public class Messages extends AppCompatActivity {
 
             typemessage.setVisibility(View.GONE);
             sendbtn.setVisibility(View.GONE);
+            sendphotobtn.setVisibility(View.GONE);
             blockTV.setVisibility(View.VISIBLE);
 
         }
@@ -539,12 +819,11 @@ public class Messages extends AppCompatActivity {
 
             typemessage.setVisibility(View.VISIBLE);
             sendbtn.setVisibility(View.VISIBLE);
+            sendphotobtn.setVisibility(View.VISIBLE);
             blockTV.setVisibility(View.GONE);
 
             isFinalized=false;
 
-
-            isFinalizzed=true;
 
 
         }

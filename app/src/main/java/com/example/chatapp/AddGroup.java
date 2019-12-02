@@ -31,8 +31,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import static java.lang.Thread.sleep;
 
@@ -42,6 +46,8 @@ public class AddGroup extends AppCompatActivity {
     protected FloatingActionButton addbtn;
 
     public static int nm=0;
+
+
 
     private RecyclerView recyclerView;
     private UserGroupAdapter userAdapter;
@@ -228,6 +234,39 @@ public class AddGroup extends AppCompatActivity {
 
 
     }
+
+
+
+
+
+
+    public static String shuffleString(String string)
+    {
+        final String possibleValues = string;
+        final List<Integer> indices = new LinkedList<>();
+        for (int i = 0; i < possibleValues.length(); i++) {
+            indices.add(i);
+        }
+        Collections.shuffle(indices);
+
+        final char[] baseChars = possibleValues.toCharArray();
+        final char[] randomChars = new char[baseChars.length];
+        for (int i = 0; i < indices.size(); i++) {
+            randomChars[indices.get(i)] = baseChars[i];
+        }
+        final String randomizedString = new String(randomChars);
+        System.out.println(randomizedString);
+
+        final Random random = new Random();
+        final int firstStrLength = random.nextInt(randomChars.length);
+        final int secondStrLength = randomChars.length - firstStrLength;
+        final String s1 = randomizedString.substring(0, firstStrLength);
+        final String s2 = randomizedString.substring(firstStrLength);
+
+        return  s1+s2;
+    }
+
+
 
     private void readusers() {
 

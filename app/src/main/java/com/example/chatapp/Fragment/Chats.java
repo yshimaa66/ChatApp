@@ -24,8 +24,10 @@ import android.widget.Toast;
 
 import com.example.chatapp.Adapter.UserAdapter;
 import com.example.chatapp.Home;
+import com.example.chatapp.Model.Chat;
 import com.example.chatapp.Model.Chatlist;
 import com.example.chatapp.Model.User;
+import com.example.chatapp.Notification.Token;
 import com.example.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,7 +36,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +50,7 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
 
-    protected List<User> users;
+    protected List<User> users,userss;
 
     public static List<Chatlist> userList;
 
@@ -90,7 +94,7 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
 
         users = new ArrayList<>();
 
-
+        userss = new ArrayList<>();
 
 
 
@@ -131,9 +135,26 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
 
 
 
+        UpdateToken(FirebaseInstanceId.getInstance().getToken());
 
         return view;
     }
+
+
+
+
+    private void UpdateToken(String token){
+
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token token1 = new Token(token);
+        reference.child(firebaseUser.getUid()).setValue(token1);
+    }
+
+
+
+
+
 
     private void readusers(){
 
@@ -160,6 +181,9 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
                         if(user.getId().equals(chatlist.getId())){
 
 
+
+
+
                             users.add(user);
 
 
@@ -172,6 +196,69 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
 
 
                 }
+
+/*
+                userss.clear();
+
+                for(int i =0;i<users.size();i++){
+
+
+
+
+                        DatabaseReference referencee = FirebaseDatabase.getInstance().getReference("Chats");
+
+
+                        final int finalI = i;
+                        referencee.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                                    Chat cchat = snapshot.getValue(Chat.class);
+
+                                    if (cchat.getReceiver().equals(firebaseUser.getUid()) && cchat.getSender()
+                                            .equals(users.get(finalI).getId())) {
+
+
+                                        userss.add(users.get(finalI));
+
+                                        break;
+
+
+                                    } else if (cchat.getSender().equals(firebaseUser.getUid()) && cchat.getReceiver()
+                                            .equals(users.get(finalI).getId())) {
+
+                                        userss.add(users.get(finalI));
+
+                                       break;
+
+                                    }
+
+
+                                }
+
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+
+
+                        });
+
+
+                    }
+
+
+*/
+
+
+
 
 
                 userAdapter = new UserAdapter(getContext(),users);
