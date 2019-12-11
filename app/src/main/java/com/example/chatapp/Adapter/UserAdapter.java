@@ -124,14 +124,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.Viewholder> {
                         holder.senderreciever.setVisibility(View.VISIBLE);
 
 
-                        if(!cchat.isIsseen() && cchat.getReceiver().equals(firebaseUser.getUid())){
+                        if(!cchat.isIsseen() && cchat.getReceiver().equals(firebaseUser.getUid()) && ! cchat.getSender().equals(firebaseUser.getUid())){
 
                             holder.havemessage.setVisibility(View.VISIBLE);
 
 
                         }
 
-                        if(cchat.isIsseen() || ! cchat.getReceiver().equals(firebaseUser.getUid())){
+                        if(cchat.isIsseen() || ! cchat.getReceiver().equals(firebaseUser.getUid())  && cchat.getSender().equals(firebaseUser.getUid()) ){
 
                             holder.havemessage.setVisibility(View.GONE);
 

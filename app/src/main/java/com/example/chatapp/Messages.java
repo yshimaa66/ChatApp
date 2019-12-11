@@ -82,7 +82,7 @@ public class Messages extends AppCompatActivity {
     FirebaseUser firebaseUser;
     DatabaseReference reference;
 
-    boolean isFinalized;
+    boolean isFinalized,isFinalizedd;
 
 
     ValueEventListener isseen;
@@ -146,6 +146,7 @@ public class Messages extends AppCompatActivity {
 
 
 
+
         profileimage = (CircleImageView) findViewById(R.id.profile_imagemessage);
 
 
@@ -180,6 +181,8 @@ public class Messages extends AppCompatActivity {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         isFinalized= false;
+
+        isFinalizedd=true;
 
         userblocklist(userid);
 
@@ -688,7 +691,11 @@ public class Messages extends AppCompatActivity {
                         sendbtn.setVisibility(View.GONE);
                         blockTV.setVisibility(View.VISIBLE);
 
+                        sendphotobtn.setVisibility(View.GONE);
+
                         isFinalized= true;
+
+                        isFinalizedd= false;
 
                     }
 
@@ -728,6 +735,14 @@ public class Messages extends AppCompatActivity {
                         typemessage.setVisibility(View.GONE);
                         sendbtn.setVisibility(View.GONE);
                         blockTV.setVisibility(View.VISIBLE);
+                        sendphotobtn.setVisibility(View.GONE);
+
+
+
+                        isFinalized = false;
+
+                        isFinalizedd = false;
+
 
 
                     }
@@ -777,6 +792,9 @@ public class Messages extends AppCompatActivity {
     public boolean onPrepareOptionsMenu (Menu menu) {
 
         menu.findItem(R.id.unblock).setEnabled(isFinalized);
+
+        menu.findItem(R.id.block).setEnabled(isFinalizedd);
+
         return true;
     }
 
@@ -806,6 +824,8 @@ public class Messages extends AppCompatActivity {
             sendphotobtn.setVisibility(View.GONE);
             blockTV.setVisibility(View.VISIBLE);
 
+            isFinalizedd=false;
+
         }
 
 
@@ -824,6 +844,7 @@ public class Messages extends AppCompatActivity {
 
             isFinalized=false;
 
+            isFinalizedd=true;
 
 
         }
