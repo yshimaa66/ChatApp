@@ -23,12 +23,15 @@ import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.example.chatapp.Adapter.ChatAdapter;
 import com.example.chatapp.Adapter.GroupAdapter;
 import com.example.chatapp.Adapter.UserAdapter;
 import com.example.chatapp.Adapter.UserGroupAdapter;
 import com.example.chatapp.AddGroup;
 import com.example.chatapp.Messages;
+import com.example.chatapp.Model.Chat;
 import com.example.chatapp.Model.Chatlist;
+import com.example.chatapp.Model.GroupChat;
 import com.example.chatapp.Model.GroupsModel;
 import com.example.chatapp.Model.User;
 import com.example.chatapp.Model.UserGroupModel;
@@ -52,7 +55,7 @@ public class Group extends Fragment implements SearchView.OnQueryTextListener{
 
     public GroupAdapter groupAdapter;
 
-    public List<GroupsModel> groups;
+    public List<GroupsModel> groups,groupss,groupsss;
 
 
 
@@ -100,6 +103,10 @@ public class Group extends Fragment implements SearchView.OnQueryTextListener{
           recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         groups = new ArrayList<>();
+
+        groupss = new ArrayList<>();
+
+        groupsss = new ArrayList<>();
 
         readgroups();
 
@@ -190,6 +197,112 @@ public class Group extends Fragment implements SearchView.OnQueryTextListener{
 
             }
         });
+
+
+
+
+
+
+
+
+
+
+
+
+
+        DatabaseReference referencee = FirebaseDatabase.getInstance().getReference("GroupChats");
+        referencee.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                groupss.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    GroupChat cchat = snapshot.getValue(GroupChat.class);
+                    int k=0;
+
+                    assert cchat != null;
+                    assert firebaseUser != null;
+
+                        for(int i=0;i<groups.size();i++){
+
+                            if(cchat.getGroupid().equals(groups.get(i).getGroupid())){
+
+                                groupss.add(0,groups.get(i));
+
+                                //   Toast.makeText(getContext(), users.get(i).getUsername()+"145", Toast.LENGTH_SHORT).show();
+
+
+
+                                k=1;
+                                break;
+
+                            } }
+
+
+                }
+
+
+
+
+
+
+                groupsss.clear();
+
+                for(int i=0;i<groupss.size();i++){
+
+                    if(!groupsss.contains(groupss.get(i))){
+
+                        groupsss.add(groupss.get(i));
+
+                    }
+
+
+                }
+
+
+                if(groupsss.size()!=groups.size()){
+
+                    for(int i=0;i<groups.size();i++){
+
+                        if(!groupsss.contains(groups.get(i))){
+
+                            groupsss.add(groups.get(i));
+
+                        }
+
+
+                    }
+
+                }
+
+
+                groupAdapter = new GroupAdapter(getContext(),groupsss);
+                recyclerView.setAdapter(groupAdapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     }

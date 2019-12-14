@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.chatapp.Adapter.ChatAdapter;
 import com.example.chatapp.Adapter.UserAdapter;
 import com.example.chatapp.Fragment.Chats;
 import com.example.chatapp.Model.GroupsModel;
@@ -58,7 +59,7 @@ public class GroupInfo extends AppCompatActivity {
     int i;
 
     public RecyclerView recyclerView;
-    public UserAdapter userAdapter;
+    public ChatAdapter chatAdapter;
 
     StorageReference storageReference;
     private static final int image_request = 1;
@@ -202,8 +203,8 @@ public class GroupInfo extends AppCompatActivity {
                 }
 
 
-                userAdapter = new UserAdapter(getApplicationContext(),users);
-                recyclerView.setAdapter(userAdapter);
+                chatAdapter = new ChatAdapter(getApplicationContext(),users);
+                recyclerView.setAdapter(chatAdapter);
 
 
             }

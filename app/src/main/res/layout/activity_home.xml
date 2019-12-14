@@ -14,6 +14,7 @@
         android:id="@+id/toolbar"
         layout="@layout/activity_layout_bar"
 
+
        >
 
     </include>
@@ -45,6 +46,8 @@
         <com.google.android.material.tabs.TabLayout
             android:layout_below="@id/toolbar"
             android:id="@+id/tabLayout"
+            app:tabTextColor="#636C74"
+            app:tabSelectedTextColor="#FFFFFF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"

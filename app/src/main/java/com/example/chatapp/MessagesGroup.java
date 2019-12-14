@@ -292,7 +292,7 @@ public class MessagesGroup extends AppCompatActivity {
                 username.setText(groupsModel.getGroupname());
 
                 if (groupsModel.getImageURL().equals("default")) {
-                    profileimage.setImageResource(R.drawable.ic_imgprofile);
+                    profileimage.setImageResource(R.drawable.ic_groupphoto);
                 } else {
 
                     Glide.with(MessagesGroup.this).load(groupsModel.getImageURL()).into(profileimage);

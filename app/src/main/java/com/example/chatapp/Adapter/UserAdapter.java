@@ -82,114 +82,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.Viewholder> {
 
 
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-
-        reference = FirebaseDatabase.getInstance().getReference("Chats");
-
-
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                    Chat cchat = snapshot.getValue(Chat.class);
-
-                    if (cchat.getReceiver().equals(firebaseUser.getUid()) && cchat.getSender().equals(user.getId())) {
-
-
-
-
-                        holder.senderreciever.setText(user.getUsername());
-
-
-                        if(cchat.getMessage().contains("https://firebasestorage.googleapis.com/v0/b/chatapp-9b682.appspot.com/o/uploads%")){
-
-                            holder.lastmessage.setText("sent a photo ");
-                        }else{
-
-                            holder.lastmessage.setText(": "+cchat.getMessage()+" ");
-
-                        }
-
-                        holder.lastmessagetime.setText(cchat.getTime());
-
-                        holder.lastmessage.setVisibility(View.VISIBLE);
-
-                        holder.lastmessagetime.setVisibility(View.VISIBLE);
-
-                        holder.senderreciever.setVisibility(View.VISIBLE);
-
-
-                        if(!cchat.isIsseen() && cchat.getReceiver().equals(firebaseUser.getUid()) && ! cchat.getSender().equals(firebaseUser.getUid())){
-
-                            holder.havemessage.setVisibility(View.VISIBLE);
-
-
-                        }
-
-                        if(cchat.isIsseen() || ! cchat.getReceiver().equals(firebaseUser.getUid())  && cchat.getSender().equals(firebaseUser.getUid()) ){
-
-                            holder.havemessage.setVisibility(View.GONE);
-
-                        }
-
-
-
-                    }
-
-
-                    else if (cchat.getSender().equals(firebaseUser.getUid()) && cchat.getReceiver().equals(user.getId())) {
-
-
-
-
-                        holder.senderreciever.setText("You");
-                        if(cchat.getMessage().contains("https://firebasestorage.googleapis.com/v0/b/chatapp-9b682.appspot.com/o/uploads%")){
-
-                            holder.lastmessage.setText("sent a photo ");
-                        }else{
-
-                            holder.lastmessage.setText(": "+cchat.getMessage()+" ");
-
-                        }
-                        holder.lastmessagetime.setText(cchat.getTime());
-
-
-                        holder.lastmessage.setVisibility(View.VISIBLE);
-
-                        holder.lastmessagetime.setVisibility(View.VISIBLE);
-
-                        holder.senderreciever.setVisibility(View.VISIBLE);
-
-
-
-
-
-                    }
-
-
-
-
-
-
-
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-
-        });
 
 
 
@@ -213,7 +105,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.Viewholder> {
         public TextView username;
         public ImageView profileimage,havemessage;
 
-        public TextView lastmessage,lastmessagetime,senderreciever;
+
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
@@ -222,13 +114,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.Viewholder> {
 
             profileimage=(ImageView)itemView.findViewById(R.id.profile_imageuseritem);
 
-            lastmessage = itemView.findViewById(R.id.lastmessage);
 
-            lastmessagetime=itemView.findViewById(R.id.lastmessagetime);
-
-            senderreciever=itemView.findViewById(R.id.senderreciever);
-
-            havemessage=itemView.findViewById(R.id.havemessage);
 
 
         }

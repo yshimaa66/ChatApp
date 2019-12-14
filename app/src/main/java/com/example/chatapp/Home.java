@@ -3,6 +3,7 @@ package com.example.chatapp;
 import android.annotation.SuppressLint;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerTabStrip;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
@@ -78,7 +80,11 @@ public class Home extends AppCompatActivity implements SearchView.OnQueryTextLis
 
 
 
+
         viewPager.setAdapter(viewPagerAdapter);
+
+
+
 
         tabLayout.setupWithViewPager(viewPager);
 

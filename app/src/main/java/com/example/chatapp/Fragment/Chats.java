@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.example.chatapp.Adapter.ChatAdapter;
 import com.example.chatapp.Adapter.UserAdapter;
 import com.example.chatapp.Home;
 import com.example.chatapp.Model.Chat;
@@ -48,9 +49,9 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
 
 
     private RecyclerView recyclerView;
-    private UserAdapter userAdapter;
+    private ChatAdapter chatAdapter;
 
-    protected List<User> users,userss;
+    protected List<User> users,userss,usersss;
 
     public static List<Chatlist> userList;
 
@@ -97,7 +98,7 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
         userss = new ArrayList<>();
 
 
-
+        usersss = new ArrayList<>();
 
 
 
@@ -182,8 +183,6 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
 
 
 
-
-
                             users.add(user);
 
 
@@ -261,8 +260,16 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
 
 
 
-                userAdapter = new UserAdapter(getContext(),users);
-                recyclerView.setAdapter(userAdapter);
+
+
+
+
+
+
+
+
+                chatAdapter = new ChatAdapter(getContext(),users);
+                recyclerView.setAdapter(chatAdapter);
 
 
             }
@@ -274,7 +281,95 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
         });
 
 
+
+
+
+
+
+
+        DatabaseReference referencee = FirebaseDatabase.getInstance().getReference("Chats");
+        referencee.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userss.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    Chat cchat = snapshot.getValue(Chat.class);
+                    int k=0;
+
+                    assert cchat != null;
+                    assert firebaseUser != null;
+                    if (cchat.getReceiver().equals(firebaseUser.getUid()) || cchat.getSender()
+                            .equals(firebaseUser.getUid())) {
+
+                        for(int i=0;i<users.size();i++){
+
+                            if(cchat.getReceiver().equals(users.get(i).getId()) || cchat.getSender()
+                                    .equals(users.get(i).getId())){
+
+                        userss.add(0,users.get(i));
+
+                     //   Toast.makeText(getContext(), users.get(i).getUsername()+"145", Toast.LENGTH_SHORT).show();
+
+
+
+                        k=1;
+                        break;
+
+                    } } }
+
+
+                }
+
+
+
+
+
+
+                usersss.clear();
+
+                for(int i=0;i<userss.size();i++){
+
+                    if(!usersss.contains(userss.get(i))){
+
+                        usersss.add(userss.get(i));
+
+                    }
+
+
+                }
+
+
+
+                chatAdapter = new ChatAdapter(getContext(),usersss);
+                recyclerView.setAdapter(chatAdapter);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
 
 
     @SuppressLint("ResourceType")
@@ -350,8 +445,8 @@ public class Chats extends Fragment implements SearchView.OnQueryTextListener{
                 }
 
 
-                userAdapter = new UserAdapter(getContext(),users);
-                recyclerView.setAdapter(userAdapter);
+                chatAdapter = new ChatAdapter(getContext(),users);
+                recyclerView.setAdapter(chatAdapter);
 
 
             }
