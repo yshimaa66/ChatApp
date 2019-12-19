@@ -16,6 +16,7 @@ import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -56,6 +57,12 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -64,10 +71,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.google.android.gms.common.util.Base64Utils.decode;
+import static com.google.android.gms.common.util.Base64Utils.encode;
 
 public class Messages extends AppCompatActivity {
 
@@ -84,6 +102,7 @@ public class Messages extends AppCompatActivity {
 
     boolean isFinalized,isFinalizedd;
 
+    SecretKey secret;
 
     ValueEventListener isseen;
 
@@ -199,7 +218,8 @@ public class Messages extends AppCompatActivity {
 
                 if(!message.equals("")){
 
-                    sendmessage(firebaseUser.getUid(),userid,message);
+
+                    sendmessage(firebaseUser.getUid(),userid,encrypt(message));
 
                     typemessage.setText("");
 
@@ -493,7 +513,7 @@ public class Messages extends AppCompatActivity {
                     Token token = snapshot.getValue(Token.class);
 
                     Data data = new Data(firebaseUser.getUid(),R.mipmap.ic_launcher
-                            ,username+ " : "+msg,"New Message",userid);
+                            ,username+ " : "+decrypt(msg),"New Message",userid);
 
 
                     Sender sender = new Sender(data,token.getToken());
@@ -855,9 +875,41 @@ public class Messages extends AppCompatActivity {
     }
 
 
+    public static String encrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
+            byte[] encrypted = cipher.doFinal(value.getBytes());
+            return encode(encrypted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    public static String decrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+            byte[] original = cipher.doFinal(decode(value));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
 
 
 

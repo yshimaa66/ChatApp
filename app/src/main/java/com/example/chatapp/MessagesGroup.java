@@ -66,10 +66,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.google.android.gms.common.util.Base64Utils.decode;
+import static com.google.android.gms.common.util.Base64Utils.encode;
 
 public class MessagesGroup extends AppCompatActivity {
 
@@ -236,7 +243,7 @@ public class MessagesGroup extends AppCompatActivity {
 
                         if(!message.equals("")){
 
-                            sendmessage(firebaseUser.getUid(),groupsModel.getGroupid(),message);
+                            sendmessage(firebaseUser.getUid(),groupsModel.getGroupid(),encrypt(message));
 
                             typemessage.setText("");
 
@@ -301,6 +308,7 @@ public class MessagesGroup extends AppCompatActivity {
 
 
                 readmessages(firebaseUser.getUid(), groupsModel.getGroupid(),groupsModel.getImageURL());
+
 
                 isseenmessageall(groupsModel.getUser().size());
 
@@ -620,7 +628,7 @@ String sendername = null;
 
 
                                       data = new Data(firebaseUser.getUid(), R.mipmap.ic_launcher
-                                              , groupname +"    " + sendername + " : " + msg, "New Message"
+                                              , groupname +"    " + sendername + " : " + decrypt(msg), "New Message"
                                               ,receiver,groupid);
 
 
@@ -1023,7 +1031,41 @@ String sendername = null;
         return super.onOptionsItemSelected(item);
     }
 
+    public static String encrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
 
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+
+            byte[] encrypted = cipher.doFinal(value.getBytes());
+            return encode(encrypted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    public static String decrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+            byte[] original = cipher.doFinal(decode(value));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
 
 
     @Override

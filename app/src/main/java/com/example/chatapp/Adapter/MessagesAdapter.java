@@ -21,6 +21,12 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import static com.google.android.gms.common.util.Base64Utils.decode;
+
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
 
 
@@ -82,9 +88,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         }else{
 
-            holder.showmessage.setText(cchat.getMessage());
+            holder.showmessage.setText(decrypt(cchat.getMessage()));
             holder.sentedphoto.setVisibility(View.GONE);
             holder.showmessage.setVisibility(View.VISIBLE);
+
+
 
         }
 
@@ -144,6 +152,32 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         }
     }
+
+
+
+    public static String decrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+            byte[] original = cipher.doFinal(decode(value));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
+
+
 
 
     @Override

@@ -26,6 +26,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import static com.google.android.gms.common.util.Base64Utils.decode;
+
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.Viewholder> {
 
 
@@ -164,7 +170,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.Viewholder> {
                             holder.lastmessage.setText("sent a photo ");
                         }else{
 
-                            holder.lastmessage.setText(": "+cchat.getMessage()+" ");
+                            holder.lastmessage.setText(": "+decrypt(cchat.getMessage())+" ");
 
                         }
                         holder.lastmessagetime.setText(cchat.getTime());
@@ -213,6 +219,33 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.Viewholder> {
 
 
     }
+
+
+
+
+
+
+
+
+    public static String decrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+            byte[] original = cipher.doFinal(decode(value));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
 
     @Override
     public int getItemCount() {

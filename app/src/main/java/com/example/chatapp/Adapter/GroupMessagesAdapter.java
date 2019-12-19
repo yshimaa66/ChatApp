@@ -32,6 +32,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import static com.google.android.gms.common.util.Base64Utils.decode;
+import static com.google.android.gms.common.util.Base64Utils.encode;
+
 public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdapter.ViewHolder>{
 
 
@@ -102,7 +109,7 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
 
         }else{
 
-            holder.showmessage.setText(cchat.getMessage());
+            holder.showmessage.setText(decrypt(cchat.getMessage()));
             holder.sentedphoto.setVisibility(View.GONE);
             holder.showmessage.setVisibility(View.VISIBLE);
 
@@ -225,6 +232,42 @@ public class GroupMessagesAdapter extends RecyclerView.Adapter<GroupMessagesAdap
             return message_left;
 
         }
+    }
+
+    public static String encrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
+
+            byte[] encrypted = cipher.doFinal(value.getBytes());
+            return encode(encrypted);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    public static String decrypt(String value) {
+        String key = "aesEncryptionKey";
+        String initVector = "encryptionIntVec";
+        try {
+            IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "AES");
+
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);
+            byte[] original = cipher.doFinal(decode(value));
+
+            return new String(original);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
     }
 }
 
