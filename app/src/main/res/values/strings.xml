@@ -24,4 +24,7 @@
     <string name="Groupinfo">Group info</string>
     <string name="Lastmessage">Last message</string>
     <string name="isseen">is seen</string>
+    <string name="EditGroup">Edit Group</string>
+    <string name="AddToGroup">Add To Group</string>
+    <string name="dialog_text">All your friends are already in the group</string>
 </resources>

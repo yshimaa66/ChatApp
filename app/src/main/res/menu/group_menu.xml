@@ -17,6 +17,21 @@
 
     </item>
 
+    <item
+        android:id="@+id/editgroup"
+        android:title="@string/EditGroup"
+        app:showAsAction="never"
+        >
+
+    </item>
+
+    <item
+        android:id="@+id/addtogroup"
+        android:title="@string/AddToGroup"
+        app:showAsAction="never"
+        >
+
+    </item>
 
     <item
         android:id="@+id/leave"

@@ -9,8 +9,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,7 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".GroupInfo"></activity>
+        <activity android:name=".AddToGroup"></activity>
+        <activity android:name=".group_edit_item" />
+        <activity android:name=".Edit_Group" />
+        <activity android:name=".GroupInfo" />
         <activity android:name=".MessagesGroup" />
         <activity android:name=".AddGroup" />
         <activity android:name=".group_item" />
@@ -36,23 +37,22 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".Notification.MyFirebaseMessaging"
+        <service
+            android:name=".Notification.MyFirebaseMessaging"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
-        <service android:name=".Notification.MyFirebaseIdService"
+        <service
+            android:name=".Notification.MyFirebaseIdService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-
-
     </application>
 
 </manifest>

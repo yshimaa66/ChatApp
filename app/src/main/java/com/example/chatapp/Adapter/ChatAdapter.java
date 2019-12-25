@@ -128,7 +128,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.Viewholder> {
                             holder.lastmessage.setText("sent a photo ");
                         }else{
 
-                            holder.lastmessage.setText(": "+cchat.getMessage()+" ");
+                            holder.lastmessage.setText(": "+decrypt(cchat.getMessage())+" ");
 
                         }
 

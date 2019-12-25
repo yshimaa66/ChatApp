@@ -81,7 +81,7 @@ import static com.google.android.gms.common.util.Base64Utils.encode;
 public class MessagesGroup extends AppCompatActivity {
 
 
-
+    String adminid="";
     CircleImageView profileimage;
 
     TextView username;
@@ -137,8 +137,6 @@ public class MessagesGroup extends AppCompatActivity {
 
 
         leftTV.setVisibility(View.GONE);
-
-
 
 
 
@@ -203,7 +201,42 @@ public class MessagesGroup extends AppCompatActivity {
 
        // userblocklist(userid);
 
-        isFinalized= false;
+
+
+
+
+
+
+
+        reference= FirebaseDatabase.getInstance().getReference("Groups").child(groupid);
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                final GroupsModel group = dataSnapshot.getValue(GroupsModel.class);
+
+
+                assert group != null;
+                adminid=group.getAdminid();
+
+
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+
+        });
+
+
+
+
 
 
 
@@ -908,7 +941,26 @@ String sendername = null;
     }
 
 
+    @Override
+    public boolean onPrepareOptionsMenu (Menu menu) {
 
+       // Toast.makeText(this, adminid+"", Toast.LENGTH_SHORT).show();
+
+        if(adminid.equals(firebaseUser.getUid())){
+            isFinalized= true;
+
+        }else{
+
+            isFinalized= false;
+
+
+        }
+
+        menu.findItem(R.id.editgroup).setEnabled(isFinalized);
+        menu.findItem(R.id.addtogroup).setEnabled(isFinalized);
+
+        return true;
+    }
 
 
     @Override
@@ -925,9 +977,18 @@ String sendername = null;
         if(id==R.id.groupinfo){
 
 
-            Intent intent = new Intent(this, GroupInfo.class);
-            intent.putExtra("groupid",groupid);
-            startActivity(intent);
+
+
+
+
+            //Toast.makeText(this, adminid+"", Toast.LENGTH_SHORT).show();
+
+
+
+
+                Intent intent = new Intent(this, GroupInfo.class);
+                intent.putExtra("groupid", groupid);
+                startActivity(intent);
 
 
 
@@ -937,12 +998,34 @@ String sendername = null;
 
 
 
+        if (id == R.id.editgroup) {
 
 
 
 
+                Intent intent = new Intent(this, Edit_Group.class);
+                intent.putExtra("groupid", groupid);
+                startActivity(intent);
 
 
+
+        }
+
+
+
+
+        if (id == R.id.addtogroup) {
+
+
+
+
+            Intent intent = new Intent(this, AddToGroup.class);
+            intent.putExtra("groupid", groupid);
+            startActivity(intent);
+
+
+
+        }
 
 
 

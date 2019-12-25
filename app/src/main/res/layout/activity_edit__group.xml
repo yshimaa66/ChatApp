@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GroupInfo">
+
+
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+        <LinearLayout
+            android:id="@+id/linear1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="20sp"
+            android:layout_marginTop="0sp"
+            >
+
+
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/profile_imagefragmentprofile"
+                android:layout_width="200sp"
+                android:layout_height="200sp"
+                app:civ_border_width="2sp"
+
+
+
+                android:src="@drawable/ic_imgprofile"
+
+                />
+
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/usernamefragmentprofile"
+                android:text="@string/Username"
+                android:layout_marginTop="20sp"
+
+                android:textSize="20sp"
+                android:textStyle="bold"
+
+
+                />
+
+
+
+
+            <TextView
+
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:id="@+id/friends"
+                android:text="@string/members"
+
+                android:layout_marginTop="20sp"
+                android:layout_marginBottom="20sp"
+
+                android:textSize="30sp"
+                android:textStyle="bold"
+
+
+
+
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerviewusers"
+
+                android:layout_width="match_parent"
+                android:layout_height="200sp" />
+
+
+        </LinearLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+
+        android:id="@+id/addbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="100sp"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_save_group"
+        android:layout_margin="16dp"
+        tools:ignore="MissingConstraints" />
+
+
+
+</FrameLayout>
