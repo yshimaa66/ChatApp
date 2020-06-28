@@ -3,3 +3,8 @@ A chat application developed using Firebase real-time database for real-time cha
 
 
 <img src="https://github.com/yshimaa66/ChatApp/blob/master/chatapp.png" width="500" height="600">
+
+<img src="https://github.com/yshimaa66/ChatApp/blob/master/ezgif.com-video-to-gif.gif" width="500" height="600">
+
+<img src="https://github.com/yshimaa66/ChatApp/blob/master/ezgif.com-video-to-gif(1).gif" width="500" height="600">
+
